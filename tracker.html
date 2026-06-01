@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Трекер ✦ Завдань</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --cream: #fdf8f2;
+    --card-bg: #fffcf8;
+    --lavender: #e8e4f8;
+    --lavender-mid: #c4b8f0;
+    --lavender-dark: #7c6fc4;
+    --peach: #fde8db;
+    --peach-dark: #d4734a;
+    --mint: #ddf2e8;
+    --mint-dark: #3a9a6e;
+    --rose: #fce8ee;
+    --rose-dark: #c4536e;
+    --yellow: #fef3d0;
+    --yellow-dark: #c4940a;
+    --red-soft: #fde0e0;
+    --red-dark: #c43a3a;
+    --blue-soft: #e0ecfd;
+    --blue-dark: #3a6fc4;
+    --shadow-soft: 0 2px 12px rgba(150,130,200,0.12);
+    --shadow-card: 0 1px 6px rgba(150,130,200,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    color: #3d3450;
+  }
+  h1,h2,h3,.heading { font-family: 'Nunito', sans-serif; }
+
+  /* BACKGROUND DECORATION */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(196,184,240,0.12) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(253,232,219,0.15) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: rgba(253,248,242,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1.5px solid rgba(196,184,240,0.28);
+    padding: 0 1.5rem;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--lavender-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  .topbar-logo .star { color: var(--peach-dark); }
+  .topbar-actions { display: flex; gap: 0.45rem; align-items: center; }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.45rem 1rem;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0) scale(0.97); }
+
+  .btn-primary {
+    background: var(--lavender-dark);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(124,111,196,0.35);
+  }
+  .btn-primary:hover { background: #6a5fb8; }
+
+  .btn-share {
+    background: var(--mint);
+    color: var(--mint-dark);
+    border: 1.5px solid rgba(58,154,110,0.28);
+  }
+  .btn-share:hover { background: #c8eed9; }
+
+  .btn-ai {
+    background: var(--lavender);
+    color: var(--lavender-dark);
+    border: 1.5px solid rgba(124,111,196,0.28);
+  }
+  .btn-ai:hover { background: #d8d2f4; }
+
+  .btn-danger {
+    background: var(--red-soft);
+    color: var(--red-dark);
+    border: 1.5px solid rgba(196,58,58,0.2);
+    padding: 0.28rem 0.55rem;
+    font-size: 0.74rem;
+  }
+  .btn-danger:hover { background: #fac9c9; transform: translateY(0); }
+
+  .btn-edit {
+    background: var(--lavender);
+    color: var(--lavender-dark);
+    border: 1.5px solid rgba(124,111,196,0.2);
+    padding: 0.28rem 0.55rem;
+    font-size: 0.74rem;
+  }
+  .btn-edit:hover { background: #d8d2f4; transform: translateY(0); }
+
+  .btn-move {
+    background: rgba(196,184,240,0.18);
+    color: var(--lavender-dark);
+    border: 1.5px solid rgba(196,184,240,0.38);
+    padding: 0.3rem 0.5rem;
+    font-size: 0.72rem;
+    border-radius: 20px;
+    line-height: 1;
+  }
+  .btn-move:hover { background: var(--lavender); transform: translateY(0); }
+
+  /* BOARD */
+  .board-wrap {
+    padding: 1.5rem;
+    overflow-x: auto;
+    position: relative;
+    z-index: 1;
+  }
+  .board {
+    display: flex;
+    gap: 1rem;
+    min-width: max-content;
+    align-items: flex-start;
+  }
+
+  /* COLUMN */
+  .column {
+    width: 285px;
+    min-width: 285px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255,255,255,0.62);
+    border: 1.5px solid rgba(196,184,240,0.2);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .column-header {
+    padding: 1rem 1rem 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1.5px solid rgba(196,184,240,0.15);
+  }
+  .column-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .col-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .col-count {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.15rem 0.52rem;
+    border-radius: 12px;
+    min-width: 22px;
+    text-align: center;
+  }
+  .column-cards {
+    padding: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-height: 80px;
+    transition: background 0.15s;
+    flex: 1;
+  }
+  .column-cards.drag-over {
+    background: rgba(196,184,240,0.1);
+    border-radius: 12px;
+  }
+  .column-add {
+    padding: 0.55rem 0.7rem 0.7rem;
+  }
+  .btn-add-card {
+    width: 100%;
+    background: transparent;
+    border: 1.5px dashed rgba(196,184,240,0.45);
+    border-radius: 12px;
+    padding: 0.52rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--lavender-dark);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    opacity: 0.7;
+  }
+  .btn-add-card:hover {
+    background: var(--lavender);
+    border-style: solid;
+    border-color: var(--lavender-mid);
+    opacity: 1;
+  }
+
+  /* COLUMN THEMES */
+  .col-todo .column-header { background: rgba(224,236,253,0.38); }
+  .col-todo .col-dot { background: var(--blue-dark); }
+  .col-todo .col-count { background: var(--blue-soft); color: var(--blue-dark); }
+  .col-todo .column-title { color: var(--blue-dark); }
+  .col-todo .btn-add-card { color: var(--blue-dark); border-color: rgba(58,111,196,0.3); }
+  .col-todo .btn-add-card:hover { background: var(--blue-soft); border-color: var(--blue-dark); }
+
+  .col-critical .column-header { background: rgba(253,224,224,0.48); }
+  .col-critical .col-dot {
+    background: var(--red-dark);
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  .col-critical .col-count { background: var(--red-soft); color: var(--red-dark); }
+  .col-critical .column-title { color: var(--red-dark); }
+  .col-critical .btn-add-card { color: var(--red-dark); border-color: rgba(196,58,58,0.3); }
+  .col-critical .btn-add-card:hover { background: var(--red-soft); border-color: var(--red-dark); }
+
+  .col-bugs .column-header { background: rgba(254,243,208,0.48); }
+  .col-bugs .col-dot { background: var(--yellow-dark); }
+  .col-bugs .col-count { background: var(--yellow); color: var(--yellow-dark); }
+  .col-bugs .column-title { color: var(--yellow-dark); }
+  .col-bugs .btn-add-card { color: var(--yellow-dark); border-color: rgba(196,148,10,0.3); }
+  .col-bugs .btn-add-card:hover { background: var(--yellow); border-color: var(--yellow-dark); }
+
+  .col-inprogress .column-header { background: rgba(221,242,232,0.48); }
+  .col-inprogress .col-dot { background: var(--mint-dark); }
+  .col-inprogress .col-count { background: var(--mint); color: var(--mint-dark); }
+  .col-inprogress .column-title { color: var(--mint-dark); }
+  .col-inprogress .btn-add-card { color: var(--mint-dark); border-color: rgba(58,154,110,0.3); }
+  .col-inprogress .btn-add-card:hover { background: var(--mint); border-color: var(--mint-dark); }
+
+  .col-done .column-header { background: rgba(232,228,248,0.48); }
+  .col-done .col-dot { background: var(--lavender-dark); }
+  .col-done .col-count { background: var(--lavender); color: var(--lavender-dark); }
+  .col-done .column-title { color: var(--lavender-dark); }
+
+  @keyframes pulse-dot {
+    0%,100% { box-shadow: 0 0 0 0 rgba(196,58,58,0.5); }
+    50% { box-shadow: 0 0 0 5px rgba(196,58,58,0); }
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 0.78rem 0.82rem;
+    border: 1.5px solid rgba(196,184,240,0.18);
+    box-shadow: var(--shadow-card);
+    cursor: grab;
+    transition: all 0.18s ease;
+    position: relative;
+  }
+  .card:hover {
+    box-shadow: 0 4px 18px rgba(150,130,200,0.17);
+    transform: translateY(-1px);
+    border-color: rgba(196,184,240,0.38);
+  }
+  .card.dragging {
+    opacity: 0.45;
+    cursor: grabbing;
+    transform: rotate(1.5deg) scale(1.02);
+  }
+  .card-accent {
+    position: absolute;
+    left: 0; top: 12px; bottom: 12px;
+    width: 3px;
+    border-radius: 2px;
+  }
+  .col-todo .card-accent { background: var(--blue-dark); }
+  .col-critical .card-accent { background: var(--red-dark); }
+  .col-bugs .card-accent { background: var(--yellow-dark); }
+  .col-inprogress .card-accent { background: var(--mint-dark); }
+  .col-done .card-accent { background: var(--lavender-dark); }
+
+  .card-inner { padding-left: 10px; }
+  .card-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.87rem;
+    font-weight: 700;
+    color: #3d3450;
+    margin-bottom: 0.28rem;
+    line-height: 1.42;
+  }
+  .col-done .card-title { text-decoration: line-through; opacity: 0.58; }
+  .card-desc {
+    font-size: 0.77rem;
+    color: #7a6e8a;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+  }
+  .imported-badge {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.63rem;
+    font-weight: 700;
+    background: var(--lavender);
+    color: var(--lavender-dark);
+    padding: 0.1rem 0.42rem;
+    border-radius: 6px;
+    border: 1px solid rgba(196,184,240,0.45);
+  }
+  .card-actions { display: flex; gap: 0.28rem; align-items: center; flex-wrap: wrap; }
+
+  /* Critical card highlight */
+  .col-critical .card { border-color: rgba(196,58,58,0.18); }
+  .col-critical .card:hover { border-color: rgba(196,58,58,0.36); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(61,52,80,0.32);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.15s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--card-bg);
+    border-radius: 22px;
+    padding: 1.8rem;
+    width: 100%;
+    max-width: 440px;
+    border: 1.5px solid rgba(196,184,240,0.32);
+    box-shadow: 0 24px 70px rgba(100,80,160,0.18);
+    animation: slideUp 0.22s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .modal-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.12rem;
+    font-weight: 900;
+    color: #3d3450;
+    margin-bottom: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .form-group { margin-bottom: 1rem; }
+  .form-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #8a7e9a;
+    display: block;
+    margin-bottom: 0.32rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1.5px solid rgba(196,184,240,0.38);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: #3d3450;
+    background: #fdf9ff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--lavender-mid);
+    box-shadow: 0 0 0 3px rgba(196,184,240,0.22);
+  }
+  .form-textarea { resize: vertical; min-height: 82px; }
+  .form-select { appearance: none; cursor: pointer; }
+  .form-row { display: flex; gap: 0.75rem; }
+  .modal-actions {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.3rem;
+    justify-content: flex-end;
+  }
+  .btn-cancel {
+    background: transparent;
+    border: 1.5px solid rgba(196,184,240,0.38);
+    color: #8a7e9a;
+    padding: 0.5rem 1.1rem;
+    border-radius: 30px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-cancel:hover { background: var(--lavender); border-color: var(--lavender-mid); color: var(--lavender-dark); }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    pointer-events: none;
+  }
+  .toast {
+    background: #3d3450;
+    color: #fff;
+    padding: 0.62rem 1.2rem;
+    border-radius: 30px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.84rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 6px 24px rgba(61,52,80,0.28);
+    animation: toastIn 0.25s ease;
+    pointer-events: auto;
+  }
+  .toast.success { background: var(--mint-dark); }
+  .toast.error { background: var(--red-dark); }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.94); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 1.6rem 0.5rem;
+    color: #bab2cc;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .empty-state-icon { font-size: 1.5rem; margin-bottom: 0.4rem; opacity: 0.5; }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: confetti-fall linear forwards;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  @keyframes confetti-fall {
+    0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(280px) rotate(540deg); }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(196,184,240,0.38); border-radius: 4px; }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0 1.5rem 0;
+    margin-bottom: -0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .stat-chip {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.32rem 0.75rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .board-wrap { padding: 1rem 0.6rem; }
+    .board { flex-direction: column; min-width: auto; gap: 0.75rem; }
+    .column { width: 100%; min-width: auto; }
+    .topbar { padding: 0 0.9rem; }
+    .topbar-logo { font-size: 1rem; }
+    .topbar-logo .logo-sub { display: none; }
+    .btn { font-size: 0.78rem; padding: 0.4rem 0.72rem; }
+    .modal { padding: 1.3rem; border-radius: 18px; }
+    .form-row { flex-direction: column; gap: 0; }
+    .stats-bar { display: none; }
+  }
+
+  /* DRAG HIGHLIGHT */
+  .column-cards.drag-over {
+    background: rgba(196,184,240,0.1);
+    outline: 2px dashed rgba(196,184,240,0.5);
+    outline-offset: -4px;
+    border-radius: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+    </svg>
+    Трекер <span class="star">✦</span>
+    <span class="logo-sub" style="font-weight:500;font-size:0.78rem;color:#b0a8c0;margin-left:0.1rem;">завдань</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-ai" onclick="exportToAI()" title="Скопіювати Markdown для AI">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M12 2a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2V4a2 2 0 012-2z"/>
+        <path d="M12 14a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2v-2a2 2 0 012-2z"/>
+        <path d="M4 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2H6a2 2 0 01-2-2z"/>
+        <path d="M14 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+      AI Експорт
+    </button>
+    <button class="btn btn-share" onclick="shareBoard()" title="Поділитися дошкою">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      Поділитися
+    </button>
+    <button class="btn btn-primary" onclick="openAddModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Додати
+    </button>
+  </div>
+</header>
+
+<!-- BOARD -->
+<div class="board-wrap" style="padding-top:1.2rem;">
+  <div class="board" id="board"></div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="handleOverlayClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      <span id="modal-title-text">Нова картка</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Назва *</label>
+      <input class="form-input" id="input-title" placeholder="Назва завдання або бага..." maxlength="120">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Опис</label>
+      <textarea class="form-textarea" id="input-desc" placeholder="Докладний опис, кроки для відтворення..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Стовпець</label>
+      <select class="form-select" id="input-col">
+        <option value="todo">📋 Недороблено</option>
+        <option value="critical">🔴 Критичні баги</option>
+        <option value="bugs">🟡 Звичайні баги</option>
+        <option value="inprogress">⚙️ В роботі</option>
+        <option value="done">✅ Зроблено</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Скасувати</button>
+      <button class="btn btn-primary" onclick="saveCard()" id="save-btn">Створити</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+/* ── CONSTANTS ── */
+const COLS = [
+  { id: 'todo',       label: 'Недороблено',   icon: '📋', cls: 'col-todo' },
+  { id: 'critical',   label: 'Критичні баги', icon: '🔴', cls: 'col-critical' },
+  { id: 'bugs',       label: 'Звичайні баги', icon: '🟡', cls: 'col-bugs' },
+  { id: 'inprogress', label: 'В роботі',      icon: '⚙️', cls: 'col-inprogress' },
+  { id: 'done',       label: 'Зроблено',      icon: '✅', cls: 'col-done' },
+];
+const COL_ORDER = ['todo', 'critical', 'bugs', 'inprogress', 'done'];
+
+let cards = [];
+let editingId = null;
+let dragSrcId = null;
+
+/* ── STORAGE ── */
+function save() {
+  localStorage.setItem('kanban_v3', JSON.stringify(cards));
+}
+function load() {
+  try {
+    const raw = localStorage.getItem('kanban_v3');
+    if (raw) {
+      cards = JSON.parse(raw);
+      // Migration: remove priority field from old cards
+      cards.forEach(card => {
+        delete card.priority;
+      });
+    }
+  } catch(e) { cards = []; }
+}
+
+/* ── ID GEN ── */
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/* ── ESCAPE ── */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+/* ── RENDER ── */
+function render() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  COLS.forEach(col => {
+    const colCards = cards.filter(c => c.col === col.id);
+    const colEl = document.createElement('div');
+    colEl.className = `column ${col.cls}`;
+    colEl.dataset.col = col.id;
+
+    colEl.innerHTML = `
+      <div class="column-header">
+        <div class="column-title">
+          <span class="col-dot"></span>
+          ${col.icon} ${col.label}
+        </div>
+        <span class="col-count">${colCards.length}</span>
+      </div>
+      <div class="column-cards" id="cards-${col.id}" data-col="${col.id}"></div>
+      <div class="column-add">
+        <button class="btn-add-card" onclick="openAddModal('${col.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Додати картку
+        </button>
+      </div>
+    `;
+    board.appendChild(colEl);
+
+    const container = colEl.querySelector(`#cards-${col.id}`);
+    if (colCards.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">✦</div>
+          Порожньо
+        </div>`;
+    } else {
+      colCards.forEach(c => container.appendChild(buildCard(c)));
+    }
+    setupDropZone(container, col.id);
+  });
+}
+
+function buildCard(c) {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.dataset.id = c.id;
+  div.draggable = true;
+  div.addEventListener('dragstart', onDragStart);
+  div.addEventListener('dragend', onDragEnd);
+
+  const colIdx = COL_ORDER.indexOf(c.col);
+  const canLeft = colIdx > 0;
+  const canRight = colIdx < COL_ORDER.length - 1;
+
+  const importedHtml = c.imported ? `<span class="imported-badge">імпорт</span>` : '';
+
+  div.innerHTML = `
+    <div class="card-accent"></div>
+    <div class="card-inner">
+      <div class="card-title">${esc(c.title)}</div>
+      ${c.desc ? `<div class="card-desc">${esc(c.desc)}</div>` : ''}
+      <div class="card-footer">
+        <div style="display:flex;gap:0.28rem;align-items:center;flex-wrap:wrap;">
+          ${importedHtml}
+        </div>
+        <div class="card-actions">
+          ${canLeft  ? `<button class="btn btn-move" onclick="moveCard('${c.id}',-1)" title="Вліво">◀</button>` : ''}
+          ${canRight ? `<button class="btn btn-move" onclick="moveCard('${c.id}', 1)" title="Вправо">▶</button>` : ''}
+          <button class="btn btn-edit" onclick="editCard('${c.id}')" title="Редагувати">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+          <button class="btn btn-danger" onclick="deleteCard('${c.id}')" title="Видалити">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  return div;
+}
+
+/* ── DRAG & DROP ── */
+function onDragStart(e) {
+  dragSrcId = e.currentTarget.dataset.id;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', dragSrcId);
+}
+function onDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  dragSrcId = null;
+}
+function setupDropZone(el, colId) {
+  el.addEventListener('dragover', e => {
+    e.preventDefault();
+    el.classList.add('drag-over');
+    e.dataTransfer.dropEffect = 'move';
+  });
+  el.addEventListener('dragleave', e => {
+    if (!el.contains(e.relatedTarget)) el.classList.remove('drag-over');
+  });
+  el.addEventListener('drop', e => {
+    e.preventDefault();
+    el.classList.remove('drag-over');
+    const srcId = dragSrcId || e.dataTransfer.getData('text/plain');
+    if (srcId) {
+      const card = cards.find(c => c.id === srcId);
+      if (card && card.col !== colId) {
+        card.col = colId;
+        if (colId === 'done') boom();
+        save();
+        render();
+      }
+    }
+  });
+}
+
+/* ── MOVE BY BUTTON ── */
+function moveCard(id, dir) {
+  const card = cards.find(c => c.id === id);
+  if (!card) return;
+  const idx = COL_ORDER.indexOf(card.col);
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= COL_ORDER.length) return;
+  card.col = COL_ORDER[newIdx];
+  if (card.col === 'done') boom();
+  save();
+  render();
+}
+
+/* ── MODAL ── */
+function openAddModal(colId) {
+  editingId = null;
+  document.getElementById('modal-title-text').textContent = 'Нова картка';
+  document.getElementById('save-btn').textContent = 'Створити';
+  document.getElementById('input-title').value = '';
+  document.getElementById('input-desc').value = '';
+  document.getElementById('input-col').value = colId || 'todo';
+  document.getElementById('modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('input-title').focus(), 60);
+}
+
+function editCard(id) {
+  const card = cards.find(c => c.id === id);
+  if (!card) return;
+  editingId = id;
+  document.getElementById('modal-title-text').textContent = 'Редагувати картку';
+  document.getElementById('save-btn').textContent = 'Зберегти';
+  document.getElementById('input-title').value = card.title;
+  document.getElementById('input-desc').value = card.desc || '';
+  document.getElementById('input-col').value = card.col;
+  document.getElementById('modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('input-title').focus(), 60);
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+  editingId = null;
+}
+
+function handleOverlayClick(e) {
+  if (e.target.id === 'modal') closeModal();
+}
+
+function saveCard() {
+  const title = document.getElementById('input-title').value.trim();
+  if (!title) { toast('Введіть назву картки', 'error'); return; }
+  const col = document.getElementById('input-col').value;
+  const desc = document.getElementById('input-desc').value.trim();
+
+  if (editingId) {
+    const card = cards.find(c => c.id === editingId);
+    if (card) Object.assign(card, { title, col, desc });
+    toast('Картку оновлено ✓', 'success');
+  } else {
+    cards.push({ id: uid(), title, col, desc, created: Date.now() });
+    toast('Картку створено ✓', 'success');
+  }
+  save();
+  render();
+  closeModal();
+}
+
+function deleteCard(id) {
+  if (!confirm('Видалити цю картку?')) return;
+  cards = cards.filter(c => c.id !== id);
+  save();
+  render();
+  toast('Картку видалено');
+}
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) &&
+      document.getElementById('modal').style.display !== 'none') saveCard();
+});
+
+/* ── SHARE ── */
+function shareBoard() {
+  if (cards.length === 0) { toast('Дошка порожня — нічого ділити', 'error'); return; }
+  const shareData = cards.map(({ id, title, col, desc, created }) =>
+    ({ id, title, col, desc, created })
+  );
+  try {
+    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+    const url = `${location.href.split('?')[0]}?data=${b64}`;
+    navigator.clipboard.writeText(url)
+      .then(() => toast('Посилання скопійовано в буфер 🔗', 'success'))
+      .catch(() => { prompt('Скопіюйте посилання:', url); });
+  } catch(e) {
+    toast('Помилка формування посилання', 'error');
+  }
+}
+
+function importFromURL() {
+  const params = new URLSearchParams(location.search);
+  const data = params.get('data');
+  if (!data) return;
+  try {
+    const imported = JSON.parse(decodeURIComponent(escape(atob(data))));
+    let added = 0;
+    imported.forEach(incoming => {
+      const dup = cards.find(c =>
+        c.title.trim().toLowerCase() === (incoming.title || '').trim().toLowerCase() &&
+        (c.desc || '').trim().toLowerCase() === (incoming.desc || '').trim().toLowerCase()
+      );
+      if (!dup) {
+        cards.push({ ...incoming, id: uid(), imported: true });
+        added++;
+      }
+    });
+    if (added > 0) {
+      save();
+      render();
+      toast(`Імпортовано ${added} карток з посилання ✓`, 'success');
+    } else {
+      toast('Усі картки вже є на вашій дошці');
+    }
+    history.replaceState(null, '', location.pathname);
+  } catch(e) {
+    toast('Помилка імпорту даних', 'error');
+    history.replaceState(null, '', location.pathname);
+  }
+}
+
+/* ── AI EXPORT ── */
+function exportToAI() {
+  if (cards.length === 0) { toast('Дошка порожня', 'error'); return; }
+
+  const active = cards.filter(c => c.col !== 'done');
+  const done   = cards.filter(c => c.col === 'done');
+
+  let md = `# 🗂️ Трекер завдань — Поточний стан\n\n`;
+  md += `> Згенеровано: ${new Date().toLocaleString('uk-UA')}\n`;
+  md += `> Загалом: ${cards.length} карток | Активних: ${active.length} | Завершено: ${done.length}\n\n---\n\n`;
+
+  const sections = [
+    { colId: 'critical',   label: '🔴 Критичні баги' },
+    { colId: 'bugs',       label: '🟡 Звичайні баги' },
+    { colId: 'inprogress', label: '⚙️ В роботі' },
+    { colId: 'todo',       label: '📋 Недороблено' },
+    { colId: 'done',       label: '✅ Зроблено' },
+  ];
+
+  sections.forEach(({ colId, label }) => {
+    const colCards = cards.filter(c => c.col === colId);
+    if (colCards.length === 0) return;
+    md += `## ${label} (${colCards.length})\n\n`;
+    colCards.forEach((c, i) => {
+      md += `### ${i + 1}. ${c.title}\n`;
+      if (c.desc) md += `- **Опис:** ${c.desc}\n`;
+      md += '\n';
+    });
+  });
+
+  md += `---\n*Трекер ✦ Завдань*`;
+
+  navigator.clipboard.writeText(md)
+    .then(() => toast('Markdown скопійовано для AI 🤖', 'success'))
+    .catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = md;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('Markdown скопійовано для AI 🤖', 'success');
+    });
+}
+
+/* ── TOAST ── */
+function toast(msg, type = '') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.3s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 300);
+  }, 2600);
+}
+
+/* ── CONFETTI ── */
+function boom() {
+  const colors = ['#c4b8f0','#f0997b','#5dcaa5','#fac775','#f09595','#85b7eb','#f7c6d8'];
+  for (let i = 0; i < 48; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const size = 5 + Math.random() * 8;
+    p.style.cssText = `
+      left: ${15 + Math.random() * 70}%;
+      top: ${Math.random() * 35}%;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      animation-duration: ${0.8 + Math.random() * 1.4}s;
+      animation-delay: ${Math.random() * 0.4}s;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2400);
+  }
+}
+
+/* ── DEMO DATA ── */
+function loadDemoData() {
+  if (cards.length > 0) return;
+  cards = [
+    { id: uid(), title: 'Налаштувати Firebase конфіг', col: 'todo',
+      desc: 'Внести API ключі у firebase-config.js і перевірити підключення', created: Date.now() },
+    { id: uid(), title: 'Помилка авторизації при неправильному паролі', col: 'critical',
+      desc: 'Користувач бачить порожній екран замість повідомлення про помилку', created: Date.now() },
+    { id: uid(), title: 'XSS вразливість у полі повідомлення', col: 'critical',
+      desc: 'Відсутнє екранування символів < > у msg полі', created: Date.now() },
+    { id: uid(), title: 'Дублювання сповіщень при швидкому кліку', col: 'bugs',
+      desc: 'Якщо клікнути двічі на кнопку — надсилається два сповіщення', created: Date.now() },
+    { id: uid(), title: 'Реалізувати систему друзів', col: 'inprogress',
+      desc: 'Пошук за ZAP-ID, запити на дружбу, список друзів', created: Date.now() },
+    { id: uid(), title: 'Firebase Security Rules', col: 'todo',
+      desc: 'Обмежити доступ до даних тільки для власників', created: Date.now() },
+    { id: uid(), title: 'Розробити адаптивний дизайн', col: 'done',
+      desc: 'Вже реалізовано responsive layout для мобільних', created: Date.now() },
+    { id: uid(), title: 'Додати конфеті при прийнятті запрошення', col: 'done',
+      created: Date.now() },
+  ];
+  save();
+}
+
+/* ── INIT ── */
+load();
+loadDemoData();
+render();
+importFromURL();
+</script>
+</body>
+</html>
