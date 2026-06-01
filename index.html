@@ -908,7 +908,7 @@ function shareBoard() {
     ({ id, title, col, desc, created })
   );
   try {
-    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+    const b64 = btoa(encodeURIComponent(JSON.stringify(shareData)));
     const url = `${location.href.split('?')[0]}?data=${b64}`;
     navigator.clipboard.writeText(url)
       .then(() => toast('Посилання скопійовано в буфер 🔗', 'success'))
@@ -923,7 +923,7 @@ function importFromURL() {
   const data = params.get('data');
   if (!data) return;
   try {
-    const imported = JSON.parse(decodeURIComponent(escape(atob(data))));
+    const imported = JSON.parse(decodeURIComponent(atob(data)));
     let added = 0;
     imported.forEach(incoming => {
       const dup = cards.find(c =>

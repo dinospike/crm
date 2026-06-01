@@ -1030,30 +1030,6 @@ function boom() {
   }
 }
 
-/* ── DEMO DATA ── */
-function loadDemoData() {
-  if (cards.length > 0) return;
-  cards = [
-    { id: uid(), title: 'Налаштувати Firebase конфіг', col: 'todo',
-      desc: 'Внести API ключі у firebase-config.js і перевірити підключення', created: Date.now() },
-    { id: uid(), title: 'Помилка авторизації при неправильному паролі', col: 'critical',
-      desc: 'Користувач бачить порожній екран замість повідомлення про помилку', created: Date.now() },
-    { id: uid(), title: 'XSS вразливість у полі повідомлення', col: 'critical',
-      desc: 'Відсутнє екранування символів < > у msg полі', created: Date.now() },
-    { id: uid(), title: 'Дублювання сповіщень при швидкому кліку', col: 'bugs',
-      desc: 'Якщо клікнути двічі на кнопку — надсилається два сповіщення', created: Date.now() },
-    { id: uid(), title: 'Реалізувати систему друзів', col: 'inprogress',
-      desc: 'Пошук за ZAP-ID, запити на дружбу, список друзів', created: Date.now() },
-    { id: uid(), title: 'Firebase Security Rules', col: 'todo',
-      desc: 'Обмежити доступ до даних тільки для власників', created: Date.now() },
-    { id: uid(), title: 'Розробити адаптивний дизайн', col: 'done',
-      desc: 'Вже реалізовано responsive layout для мобільних', created: Date.now() },
-    { id: uid(), title: 'Додати конфеті при прийнятті запрошення', col: 'done',
-      created: Date.now() },
-  ];
-  save();
-}
-
 /* ── INIT ── */
 load();
 render();
